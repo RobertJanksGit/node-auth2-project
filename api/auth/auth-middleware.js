@@ -3,8 +3,13 @@ const { JWT_SECRET } = require("../secrets"); // use this secret!
 const { findBy } = require("../users/users-model");
 
 const restricted = (req, res, next) => {
-  const token = req.headers.authorization;
+  let token = req.headers.authorization;
+
   if (token) {
+    if (token.startsWith("Bearer ")) {
+      token = token.slice(7);
+    }
+
     jwt.verify(token, JWT_SECRET, (err, decoded) => {
       if (err) {
         next({ status: 401, message: "Token invalid" });

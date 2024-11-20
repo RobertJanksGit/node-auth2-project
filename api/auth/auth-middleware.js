@@ -4,7 +4,6 @@ const { findBy } = require("../users/users-model");
 
 const restricted = (req, res, next) => {
   let token = req.headers.authorization;
-
   if (token) {
     if (token.startsWith("Bearer ")) {
       token = token.slice(7);
@@ -14,7 +13,7 @@ const restricted = (req, res, next) => {
       if (err) {
         next({ status: 401, message: "Token invalid" });
       } else {
-        req.decodeJwt = decoded;
+        req.body.token = decoded;
         next();
       }
     });
@@ -39,7 +38,7 @@ const restricted = (req, res, next) => {
 };
 
 const only = (role_name) => (req, res, next) => {
-  if (req.decodeJwt && req.decodeJwt.role_name === role_name) {
+  if (req.body.token && req.body.token.role_name === role_name) {
     next();
   } else {
     next({ status: 403, message: "This is not for you" });

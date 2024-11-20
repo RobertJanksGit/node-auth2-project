@@ -18,16 +18,16 @@ router.post("/register", validateRoleName, (req, res, next) => {
     })
     .catch(next);
   /**
-    [POST] /api/auth/register { "username": "anna", "password": "1234", "role_name": "angel" }
-
-    response:
-    status 201
-    {
-      "user"_id: 3,
-      "username": "anna",
-      "role_name": "angel"
+   [POST] /api/auth/register { "username": "anna", "password": "1234", "role_name": "angel" }
+   
+   response:
+   status 201
+   {
+    "user"_id: 3,
+    "username": "anna",
+    "role_name": "angel"
     }
-   */
+    */
 });
 
 router.post("/login", checkUsernameExists, (req, res, next) => {
@@ -36,7 +36,10 @@ router.post("/login", checkUsernameExists, (req, res, next) => {
   User.findBy({ username }).then(([user]) => {
     if (user && bcrypt.compareSync(password, user.password)) {
       const token = buildToken(user);
-      res.status(200).json({ message: `${username} is back!`, token });
+      res.status(200).json({
+        message: `${username} is back!`,
+        token,
+      });
     } else {
       next({ status: 401, message: "Invalid Credentials" });
     }
@@ -64,14 +67,15 @@ router.post("/login", checkUsernameExists, (req, res, next) => {
 
 function buildToken(user) {
   const payload = {
-    subject: user.id,
+    subject: user.user_id,
     username: user.username,
     role_name: user.role_name,
   };
   const options = {
     expiresIn: "1d",
   };
-  return jwt.sign(payload, JWT_SECRET, options);
+  let test = jwt.sign(payload, JWT_SECRET, options);
+  return test;
 }
 
 module.exports = router;
